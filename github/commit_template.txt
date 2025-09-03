@@ -1,0 +1,15 @@
+# Tipo do commit (escolha um):
+# feat: nova funcionalidade
+# fix: correção de bug
+# docs: documentação
+# style: formatação (espaços, indentação, etc.)
+# refactor: refatoração de código
+# test: testes adicionados/ajustados
+# chore: mudanças que não afetam código/funcionalidade
+
+<tipo>: descrição curta
+
+# Exemplo:
+# feat: adiciona função de previsão de avaliações dos jogos
+
+# Descrição detalhada (opcional).
