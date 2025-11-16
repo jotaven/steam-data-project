@@ -2,7 +2,8 @@ import streamlit as st
 import joblib
 import pandas as pd
 import numpy as np
-import streamlit.components.v1 as components # Para o gráfico HTML
+import streamlit.components.v1 as components
+import os
 
 # -----------------
 # Configuração da Página
@@ -13,6 +14,10 @@ st.set_page_config(
     layout="wide",
 )
 
+APP_DIR = os.path.dirname(os.path.abspath(__file__))
+MODELS_DIR = os.path.join(APP_DIR, '..', 'models')
+# -----------------
+
 # -----------------
 # Carregar Modelos (uma única vez)
 # -----------------
@@ -21,11 +26,11 @@ def load_models():
     """Carrega os modelos e o gráfico do disco."""
     try:
         models = {
-            "regressor_preco": joblib.load('../models/modelo_regressao_preco.joblib'),
-            "scaler_regressao": joblib.load('../models/scaler_regressao.joblib'),
-            "classificador_hit": joblib.load('../models/modelo_classificacao_hit.joblib'),
+            "regressor_preco": joblib.load(os.path.join(MODELS_DIR, 'modelo_regressao_preco.joblib')),
+            "scaler_regressao": joblib.load(os.path.join(MODELS_DIR, 'scaler_regressao.joblib')),
+            "classificador_hit": joblib.load(os.path.join(MODELS_DIR, 'modelo_classificacao_hit.joblib')),
         }
-        with open('../models/pca_cluster_plot.html', 'r', encoding='utf-8') as f:
+        with open(os.path.join(MODELS_DIR, 'pca_cluster_plot.html'), 'r', encoding='utf-8') as f:
             models["pca_html"] = f.read()
             
         return models
@@ -45,6 +50,20 @@ page = st.sidebar.radio(
     ("Conclusão Principal", "Previsão de Preço (Regressão)", "Previsão de 'Hit' (Classificação)", "Segmentos de Mercado (Cluster)")
 )
 
+# --- MUDANÇA: Colaboradores movidos para a sidebar ---
+st.sidebar.markdown("---") # Linha divisória
+st.sidebar.markdown(
+    """
+    👥 **Colaboradores:**
+    - Gustavo Targino - 30283647
+    - João Victor Maia Branco - 29100259
+    - João Victor Nunes de Moura - 28994281
+    - João Vitor Ramos Almeida - 30081939
+    - Rodrigo Pereira de Almeida - 30173591
+    """
+)
+# -----------------
+
 # -----------------
 # Página 1: Conclusão Principal
 # -----------------
@@ -57,13 +76,7 @@ if page == "Conclusão Principal":
     2.  **A Popularidade ('Hit') é impulsionada pelo ACESSO.**
     
     ---
-            👥 **Colaboradores:**  
-        - Gustavo Targino - 30283647
-        - João Victor Maia Branco - 29100259
-        - João Victor Nunes de Moura - 28994281
-        - João Vitor Ramos Almeida - 30081939
-        - Rodrigo Pereira de Almeida - 30173591
-        """)
+    """)
     
     col1, col2 = st.columns(2)
     
@@ -85,7 +98,6 @@ if page == "Conclusão Principal":
         O modelo de **Classificação** mostra que para se tornar um "Hit" (top 25% em popularidade),
         qualidade não é o fator principal. Os drivers são:
         
-        ---
         * **`is_free`** (Ser Gratuito)
         * **`is_multiplayer`** (Ter modo Multi-player)
         
@@ -104,7 +116,6 @@ elif page == "Previsão de Preço (Regressão)" and models:
         col1, col2, col3 = st.columns(3)
         
         with col1:
-            # Usamos log_input para sliders mais intuitivos
             positive_ratings = st.number_input("Total de Avaliações Positivas", min_value=1, value=10000, step=1000)
         with col2:
             average_playtime_hours = st.number_input("Tempo Médio de Jogo (Horas)", min_value=1.0, value=50.0, step=5.0)
@@ -143,18 +154,15 @@ elif page == "Previsão de 'Hit' (Classificação)" and models:
             average_playtime_hours = st.number_input("Tempo Médio de Jogo (Horas)", min_value=0.0, value=10.0, step=5.0)
             positive_ratings = st.number_input("Total de Avaliações Positivas", min_value=0, value=1000, step=100)
 
-    # Converter toggles para 0 ou 1
     is_free_int = 1 if is_free else 0
     is_multiplayer_int = 1 if is_multiplayer else 0
     price_val = 0.0 if is_free else price
 
-   # Preparar features na ordem que o modelo foi treinado:
     clf_feature_names = ['is_free', 'is_multiplayer', 'price', 'average_playtime_hours', 'positive_ratings']
     data = [[is_free_int, is_multiplayer_int, price_val, average_playtime_hours, positive_ratings]]
 
     features_df = pd.DataFrame(data, columns=clf_feature_names)
 
-    # Fazer a predição
     prediction = models["classificador_hit"].predict(features_df)[0]
     probability = models["classificador_hit"].predict_proba(features_df)[0]
 
@@ -174,5 +182,4 @@ elif page == "Segmentos de Mercado (Cluster)" and models:
     O gráfico PCA abaixo visualiza esses clusters no espaço 2D.
     """)
     
-    # Exibir o gráfico HTML
     components.html(models["pca_html"], height=600, scrolling=True)
