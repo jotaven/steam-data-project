@@ -9,6 +9,7 @@ O projeto utiliza um pipeline completo de Data Science, incluindo limpeza de dad
 
 [**Assista ao vídeo de demonstração no YouTube**](https://youtu.be/mC6Hi5BFTfo)
 
+[**Modelos de regressão, classificação e clustering**](https://youtu.be/BszJdacKOss)
 
 ## 💡 Conclusão Principal: A Dicotomia do Mercado
 
