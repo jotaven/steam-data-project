@@ -1,0 +1,17 @@
+# Python
+venv/
+*.pyc
+__pycache__/
+
+# Dados (Nunca comite dados brutos ou processados)
+data/raw/
+data/processed/
+*.csv
+
+# Modelos (Nunca comite binários de modelo)
+models/
+*.joblib
+*.html
+
+# OS
+.DS_Store
